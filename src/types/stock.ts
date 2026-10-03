@@ -66,7 +66,27 @@ export interface FilterConfig {
   value: FilterValue;
   enabled: boolean;
 }
+export type FieldComparisonOperator =
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "eq"
+  | "neq";
 
+export interface FieldComparison {
+  leftField: keyof Stock;
+  operator: FieldComparisonOperator;
+  rightField: keyof Stock;
+}
+
+export interface PresetConfig {
+  id: string;
+  name: string;
+  description: string;
+  filters: FilterConfig[];
+  comparisons?: FieldComparison[];
+}
 export type FilterOperator =
   | "eq"
   | "neq"

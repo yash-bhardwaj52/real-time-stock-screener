@@ -1,67 +1,81 @@
-# Real-Time Stock Screener — Architecture
+# Architecture
 
-## 1. Project Overview
+## Real-Time Stock Screener
 
-The Real-Time Stock Screener is a high-performance web application
-for displaying and analyzing large amounts of stock market data.
-
-The application is built using:
-
-- Next.js 14
-- React 18
-- TypeScript
-- Tailwind CSS
-- Zustand
-- TanStack Table
-- TanStack Virtual
-- Lightweight Charts
-
-The application is designed to handle thousands of stock records
-while keeping the user interface responsive.
+The Real-Time Stock Screener is built using Next.js, React, TypeScript,
+Zustand, TanStack Table, Lightweight Charts, WebSocket, and IndexedDB.
 
 ---
 
-## 2. Application Architecture
+## 1. High-Level Architecture
 
-The application follows a component-based architecture.
-
-Main flow:
-
-User
-  ↓
-Next.js App
-  ↓
-React Components
-  ↓
-Zustand Store
-  ↓
-Stock Data
-  ↓
-Table / Charts / Filters
-
----
-
-## 3. Folder Structure
+The application follows a client-side dashboard architecture with a
+Next.js API layer for stock data and a WebSocket layer for real-time
+price updates.
 
 ```text
-src/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── globals.css
-│
-├── components/
-│   └── StockTable.tsx
-│
-├── hooks/
-│
-├── lib/
-│   └── mockDataGenerator.ts
-│
-├── store/
-│   └── stockstore.ts
-│
-├── types/
-│   └── stock.ts
-│
-└── tests/
+                    ┌─────────────────────┐
+                    │      Next.js App     │
+                    │     App Router       │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   Stock API Route   │
+                    │    /api/stocks      │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │    Mock Stock Data  │
+                    │      5,000 Stocks   │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ StockScreenerLoader │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │    StockScreener    │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ▼                ▼                ▼
+       ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+       │ Filter      │  │ Stock Table │  │ Stock Chart │
+       │ Panel       │  │             │  │             │
+       └──────┬──────┘  └─────────────┘  └─────────────┘
+              │
+              ▼
+       ┌─────────────┐
+       │ Filter      │
+       │ Engine      │
+       └─────────────┘
+
+              WebSocket
+                  │
+                  ▼
+       ┌──────────────────┐
+       │ WebSocket Server │
+       └────────┬─────────┘
+                │
+                ▼
+       ┌──────────────────┐
+       │ useWebSocket     │
+       │ React Hook       │
+       └────────┬─────────┘
+                │
+                ▼
+       ┌──────────────────┐
+       │ Zustand Store    │
+       └──────────────────┘
+
+              Offline
+                │
+                ▼
+       ┌──────────────────┐
+       │    IndexedDB     │
+       │   Offline Cache   │
+       └──────────────────┘
